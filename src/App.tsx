@@ -10,6 +10,7 @@ import Cart from './Pages/Cart';
 import Collections from './Pages/Collections'; 
 import ScrollToTop from './ScrollToTop';
 import Footer from './Pages/Footer';
+import CreateAccountForm from './Pages/CreateAccount';
 
 function App() { 
 return ( 
@@ -30,6 +31,7 @@ return (
 <Route path='/productinformation/:id' element={<ProductInformation /> } /> 
 <Route path='/addedtocart' element={<Cart />} /> 
 <Route path='/collections' element={<Collections />} /> 
+<Route path='/createAccount' element={<CreateAccountForm />} />
 </Routes> 
 <Footer />
 </> 
