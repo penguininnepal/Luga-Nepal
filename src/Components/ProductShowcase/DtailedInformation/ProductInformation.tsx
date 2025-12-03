@@ -5,12 +5,10 @@ import { products , justforyouproducts } from "../../../data/products";
 import ImageZoom from "./PoductInfoImage/imageZoom";
 import Gallery from "./PoductInfoImage/gallery";
 import ProductQuantity from "../../counter/ProductQuantity";
-import ProdDetail from "./PoductInfoImage/ProductDetail/ProdDetail";
-import Soldby from "./PoductInfoImage/Soldby";
-import DeliveryOptions from "./PoductInfoImage/DeliveryOptions";
-import ReturnandWarranty from "./PoductInfoImage/ReturnandWarranty";
 import { ChevronRight } from "lucide-react";
-import PDSubnavbar from "./PoductInfoImage/ProductDetail/ProductDetailSubnavbar";
+import Reviews from "./PoductInfoImage/Reviews/Reviews";
+import ProdDetail from "./PoductInfoImage/ProductDetail/ProdDetail";
+import AboutProdinfo from "./PoductInfoImage/Aboutprod/AboutProdinfo";
 
 const ProductInformation = () => {
   const navigate = useNavigate();
@@ -19,9 +17,6 @@ const ProductInformation = () => {
  const product =
     products.find((p) => p.id === Number(id)) ||
     justforyouproducts.find((p) => p.id === Number(id))
-
-
-  const [activeTab, setActiveTab ] = useState("overview");
 
   const images = [
     "https://c92abd90.delivery.rocketcdn.me/main-files/uploads/2018/01/Top6Sales.png",
@@ -100,22 +95,15 @@ const ProductInformation = () => {
           </section>
         </section>
       </div>
-
-      <section className="mt-4 grid grid-cols-3">
-        <Soldby />
-        <DeliveryOptions />
-        <ReturnandWarranty />
-      </section>
+      <div className="">
+        <AboutProdinfo />
+      </div>
 
       <div className="mt-6">
-        <PDSubnavbar activeTab= {activeTab} setActiveTab={setActiveTab} />
-        <ProdDetail activeTab={activeTab} />
-        <section>
-          {/* Additional product information can be added here */}
-        </section>
+        <ProdDetail />
       </div>
       <div>
-        {/*Review */}
+        <Reviews />
       </div>
     </div>
   );
