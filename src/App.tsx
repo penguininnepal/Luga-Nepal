@@ -9,6 +9,7 @@ import ProductInformation from './Components/ProductShowcase/DtailedInformation/
 import Cart from './Pages/Cart'; 
 import Collections from './Pages/Collections'; 
 import ScrollToTop from './ScrollToTop';
+import Footer from './Pages/Footer';
 
 function App() { 
 return ( 
@@ -30,6 +31,7 @@ return (
 <Route path='/addedtocart' element={<Cart />} /> 
 <Route path='/collections' element={<Collections />} /> 
 </Routes> 
+<Footer />
 </> 
 ) } 
 

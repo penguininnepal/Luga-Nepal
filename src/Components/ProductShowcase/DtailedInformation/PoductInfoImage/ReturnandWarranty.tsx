@@ -2,7 +2,7 @@ import { Info, PackageOpen, RotateCcw, ShieldOff } from "lucide-react"
 
 const ReturnandWarranty = () => {
   return (
-    <div className="w-110 h-50 bg-gray-100">
+    <div className="w-110 h-50 bg-[#fafafa] ">
       <div className="pt-2 px-4">
         <div className="flex justify-between items-center">
             <h1 className="font-semibold text-gray-700 ">Return & Warranty</h1>

@@ -1,14 +1,27 @@
-import Subnavbar from "@/Components/Subnavbar"
+import Overview from "./Overview";
+import Specification from "./Specification";
+type ProdDetailProps = {
+  activeTab: string;
+};
 
-const ProdDetail = () => {
+const ProdDetail = ({ activeTab }: ProdDetailProps) => {
   return (
-    <section>
-      <Subnavbar />
-      <div className="bg-gray-100 w-250 h-110 px-4 pt-2"> 
-        <h1 className="text-gray-700 font-semibold text-xl">Product Detailr</h1>
+    <div className="h-[50vh]">
+      <div className="p-4 bg-[#fafafa]">
+        
+        <div>
+          {activeTab === "overview" && <Overview />}
+          {activeTab === "specification" && <Specification />}
+        </div>
+        <div className="flex justify-center mt-4 ">
+            <button className="border-1 border-green-400 hover:border-green-700 py-1 px-16">
+              Load More
+            </button>
+        </div>
       </div>
-    </section>
-  )
-}
+    </div>
+  );
+};
 
-export default ProdDetail
+export default ProdDetail;
+

@@ -2,7 +2,7 @@ import { MessagesSquare } from 'lucide-react';
 
 const Soldby = () => {
   return (
-    <div className="w-110 h-50 bg-gray-100">
+    <div className="w-110 h-50 bg-[#fafafa]">
       <div className="pt-2 px-4 text-gray-700">
         <div className="grid grid-cols-2 items-center">
             <div >
@@ -16,7 +16,7 @@ const Soldby = () => {
         
       </div>
       <div className='border-1 border-gray-300 mt-1'></div>
-      <div className='grid grid-cols-3 bg-gray-100 h-22 cursor-pointer'>
+      <div className='grid grid-cols-3 bg--[#fafafa] h-22 cursor-pointer'>
             <div className=' hover:bg-gray-200 px-4 flex flex-col justify-between'>
                 <h1>Seller Rating</h1>
                 <p className='text-start mt-2 text-4xl'>

@@ -3,10 +3,10 @@ import { Banknote, MapPinHouse, MapPinPen, Package } from "lucide-react"
 
 const DeliveryOptions = () => {
   return (
-    <div className="w-110 h-50 bg-gray-100">
+    <div className="w-110 h-50 bg-[#fafafa] ">
       <div className="pt-2 px-4 grid grid-rows-3 gap-1 ">
         <h1 className="font-semibold text-gray-700 ">Delivery Options</h1>
-        <div className="flex items-center">
+        <div className="flex items-center justify-between">
             <span className="text-red-700 flex gap-4"><MapPinHouse />
             <p className="text-black">Madhyabindu- 03, Nawalpur, Gandaki, Nepal</p>
             </span>
