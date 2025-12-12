@@ -10,7 +10,7 @@ type CategoryCardProps = {
 const CategoryCard: React.FC<CategoryCardProps> = ({ image, title }) => {
   const navigate = useNavigate();
   return (
-    <div className="max-w-xs shadow-md group cursor-pointer" onClick={() => navigate('/collections')}>
+    <div className="max-w-xs group cursor-pointer" onClick={() => navigate('/collections')}>
       {/* Image container */}
       <div className="relative w-74 h-74 overflow-hidden">
         {/* Image */}

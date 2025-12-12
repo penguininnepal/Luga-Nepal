@@ -1,23 +1,25 @@
 
-import type { JustforyouProduct } from './Justforyoutype';
+import type { JustforyouProduct } from '@/data/products';
 
 type JustForYouProductProps = JustforyouProduct & {
-  onClick ? : () => void;
+  onClick?: () => void;
 }
 
-const JustForYouCard = ({ title, price, image, rating, onClick } : JustForYouProductProps) => {
+const JustForYouCard = ({ title, price, image, onClick }: JustForYouProductProps) => {
   return (
-    <div onClick={onClick} className="cursor-pointer flex flex-col gap-2 p-4 border border-gray-200 bg-white hover:shadow-xl transition-shadow duration-200">
-        <div>
-            <img src={image} alt={title} className="h-52 w-42 object-cover" />
+    <div
+      onClick={onClick}
+      className="flex flex-col bg-white group cursor-pointer"
+    >
+      <div className="overflow-hidden mb-4 bg-gray-50 aspect-[3/4]">
+        <img src={image} alt={title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+      </div>
+      <div className="text-center">
+        <h2 className="text-lg font-bold text-black uppercase tracking-wide truncate px-1 group-hover:underline underline-offset-4 decoration-1">{title}</h2>
+        <div className="flex flex-col mt-1 items-center">
+          <span className="text-base font-bold text-black">Rs {price}</span>
         </div>
-        <div>
-            <h2 className="text-ls font-bold text-gray-800">{title}</h2>
-            <p className="font-semibold text-red-500"> Rs {price}</p>
-            <p className="text-sm text-gray-600">{rating}</p>
-        </div>
-        <span className='absolute inset-y-0 right-0 w-4 bg-gradient-to-b from-blue-400 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity'></span>
-        <span className='absolute inset-y-0 left-0 w-4 bg-gradient-to-b from-blue-400 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity'></span>
+      </div>
     </div>
   )
 }

@@ -1,75 +1,65 @@
 import CategoryCard from "./CategoryCard"
 
 function Category() {
-    const sales  = [
+    const sales = [
         {
-            image: 'https://gardenerspath.com/wp-content/uploads/2015/01/How-to-Read-Seed-Packages.jpg',
-            title: 'Agriculture',
-
+            image: 'https://images.unsplash.com/photo-1618932260643-eee4a2f652a6?auto=format&fit=crop&q=80&w=800',
+            title: "Women's Fashion",
         },
         {
-            image: 'https://dropletlab.com/wp-content/uploads/2024/06/food-and-beverages-scaled.jpg',
-            title: 'Food & Beverages',
-
+            image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&q=80&w=800',
+            title: "Men's Fashion",
         },
         {
-            image: 'https://5.imimg.com/data5/SELLER/Default/2021/2/TY/LZ/SZ/93007892/handicraft-jpg.jpg',
-            title: 'Handicrafts',
-
+            image: 'https://images.unsplash.com/photo-1596462502278-27bfdd403348?auto=format&fit=crop&q=80&w=800',
+            title: 'Beauty & Cosmetics',
         },
         {
-            image: 'https://5.imimg.com/data5/SELLER/Default/2021/9/JT/XW/BL/137556958/commecial-furniture.jpg',
-            title: 'Home & Living',
-
+            image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&q=80&w=800',
+            title: 'Shoes & Footwear',
         },
         {
-            image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdNlDOTYvjZ54PopezIQNoEVebs7Tyt90da7HmnNftdhhcfeg6liJiFnswOOmLO6GiuXs&usqp=CAU',
-            title: 'Electronics',
-
+            image: 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?auto=format&fit=crop&q=80&w=800',
+            title: 'Accessories',
         },
         {
-            image: 'https://modaknits.com/wp-content/uploads/2023/09/ericwen_340_Generate_an_image_showcasing_a_diverse_range_of_clo_df863cd2-7654-48ab-bc80-0c7a279038bb_%E5%89%AF%E6%9C%AC.png',
-            title: 'Fashion',
-
+            image: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&q=80&w=800',
+            title: 'Kids Fashion',
         },
         {
-            image: 'https://www.heinens.com/content/uploads/2022/08/Heinens-Health-And-Beauty-products-800x550-1.jpg',
-            title: 'Health & Beauty',
-
+            image: 'https://images.unsplash.com/photo-1556228720-1910d93967d6?auto=format&fit=crop&q=80&w=800',
+            title: 'Handbags',
         },
         {
-            image: 'https://tiimg.tistatic.com/fp/1/009/016/soft-toys-for-babies-976.jpg',
-            title: 'Babies & Toys',
-
+            image: 'https://images.unsplash.com/photo-1509319117193-51043f65569c?auto=format&fit=crop&q=80&w=800',
+            title: 'Watches',
         },
-
-        
     ];
-        
-  return (
-    <section className="px-24">
-    <div className="mx-w-7xl mx-auto">
-        <div className="uppercase font-semibold py-2 mb-3 bg-white border-b-2 border-gray-700 text-2xl ">
-            Category
-        </div>
-        <div className="flex gap-6 sm:grid-col-1 lg:grid-col-4 md:grid-col-2 xl:grid-cols-4 2xl:grid-cols-5 flex-wrap items-center justify-center ">
-            {
-                sales.map((sale, index) =>
-                (
-                    <CategoryCard 
-                    key = {index}
-                    image = {sale.image}
-                    title = {sale.title}
-                    
-                    />
-                )
-                )
-            }
-        </div>
-      
-    </div>
-    </section>
-  )
+
+    return (
+        <section className="px-24">
+            <div className="mx-w-7xl mx-auto">
+                <div className="uppercase font-medium tracking-widest py-4 mb-6 text-xl text-center border-b border-gray-100 text-black">
+                    Shop by Category
+                </div>
+                <div className="flex gap-6 sm:grid-col-1 lg:grid-col-4 md:grid-col-2 xl:grid-cols-4 2xl:grid-cols-5 flex-wrap items-center justify-center ">
+                    {
+                        sales.map((sale, index) =>
+                        (
+                            <CategoryCard
+                                key={index}
+                                image={sale.image}
+                                title={sale.title}
+
+                            />
+                        )
+                        )
+                    }
+                </div>
+
+            </div>
+        </section>
+    )
 }
 
 export default Category

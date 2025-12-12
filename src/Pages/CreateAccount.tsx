@@ -1,302 +1,236 @@
+
 import LogoButton from "@/Components/Home/LogoButton";
 import { useState } from "react";
-
-type ErrorType = {
-  firstname? : string,
-  surname? : string,
-  day? : string,
-  month? : string,
-  year? : string,
-  gender? : string,
-  email? : string,
-  password? : string,
-  confirmPassword?: string,
-  otp? : string,
-};
+import { useNavigate } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type FormType = {
-  firstname : string,
-  surname : string,
-  day : string,
-  month : string,
-  year : string,
-  gender : string,
-  email : string,
-  password : string,
-  confirmPassword : string,
-  otp : string,
+  firstname: string;
+  surname: string;
+  day: string;
+  month: string;
+  year: string;
+  gender: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
 };
 
-
 const CreateAccount = () => {
-  
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<FormType>({
     firstname: "",
     surname: "",
     day: "",
-    month: "", 
+    month: "",
     year: "",
     gender: "",
     email: "",
     password: "",
     confirmPassword: "",
-    otp: "",
   });
 
-  const [errors, setErrors] = useState<ErrorType> ({});
-
+  const [errors, setErrors] = useState<Partial<FormType>>({});
   const [step, setStep] = useState(1);
 
   const validateStep = () => {
-    const newErrors: ErrorType = {};
+    const newErrors: Partial<FormType> = {};
     if (step === 1) {
-      if(!formData.firstname.trim())
-      newErrors.firstname = "FirstName is Required"
-    };
-
-   if (step === 2) {
+      if (!formData.firstname.trim()) newErrors.firstname = "First name is required";
+    }
+    if (step === 2) {
       if (!formData.day.trim()) newErrors.day = "Day required";
       if (!formData.month.trim()) newErrors.month = "Month required";
       if (!formData.year.trim()) newErrors.year = "Year required";
       if (!formData.gender.trim()) newErrors.gender = "Gender required";
     }
-
-    if (step === 3){
-      if(!formData.email.trim())
-        newErrors.email = "Email is Required";
-      else if (!/\S+@\S+\.\S+/.test(formData.email))
-        newErrors.email = "Enter valid email address";
-    };
-
-     if (step === 4) {
-      if (!formData.password.trim())
-        newErrors.password = "Password required";
-      else if (formData.password.length < 6)
-        newErrors.password = "Password must be at least 6 characters";
-
-      if (!formData.confirmPassword.trim())
-        newErrors.confirmPassword = "Confirm your password";
-      else if (formData.password !== formData.confirmPassword)
-        newErrors.confirmPassword = "Passwords does not match. Please check again";
+    if (step === 3) {
+      if (!formData.email.trim()) newErrors.email = "Email is required";
+      else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Invalid email";
+    }
+    if (step === 4) {
+      if (!formData.password.trim()) newErrors.password = "Password required";
+      else if (formData.password.length < 6) newErrors.password = "Min 6 characters";
+      if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Passwords do not match";
     }
 
-
     setErrors(newErrors);
-
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value});
-  };
-  
-  const handleNext = () => {
-   if (validateStep()) {setStep((prev) => prev + 1 );
-       } 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const handleBack = () => {
-    setStep((prev) => prev - 1 );
+  const handleNext = () => {
+    if (validateStep()) {
+      if (step === 4) {
+        // Save to LocalStorage
+        const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+        const newUser = {
+          ...formData,
+          id: Date.now().toString()
+        };
+        existingUsers.push(newUser);
+        localStorage.setItem('users', JSON.stringify(existingUsers));
+
+        // Navigate to Signin
+        navigate('/signin');
+      } else {
+        setStep((prev) => prev + 1);
+      }
+    }
+  };
+
+  const handleBack = () => setStep((prev) => prev - 1);
+
+  const renderStepContent = () => {
+    switch (step) {
+      case 1:
+        return (
+          <div className="space-y-6 animate-in fade-in slide-in-from-right duration-500">
+            <div className="space-y-2">
+              <label htmlFor="firstname" className="block text-sm font-bold uppercase tracking-widest text-black">First Name</label>
+              <input type="text" id="firstname" value={formData.firstname} onChange={handleChange} className="w-full border-b border-gray-300 py-3 text-lg focus:outline-none focus:border-black transition-colors bg-transparent placeholder-gray-300" placeholder="First Name" />
+              {errors.firstname && <p className="text-red-500 text-xs mt-1">{errors.firstname}</p>}
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="surname" className="block text-sm font-bold uppercase tracking-widest text-black">Surname (Optional)</label>
+              <input type="text" id="surname" value={formData.surname} onChange={handleChange} className="w-full border-b border-gray-300 py-3 text-lg focus:outline-none focus:border-black transition-colors bg-transparent placeholder-gray-300" placeholder="Surname" />
+            </div>
+          </div>
+        );
+      case 2:
+        return (
+          <div className="space-y-6 animate-in fade-in slide-in-from-right duration-500">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <label htmlFor="day" className="block text-sm font-bold uppercase tracking-widest text-black">Day</label>
+                <input type="text" id="day" value={formData.day} onChange={handleChange} className="w-full border-b border-gray-300 py-3 text-lg focus:outline-none focus:border-black transition-colors bg-transparent placeholder-gray-300" placeholder="DD" />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="month" className="block text-sm font-bold uppercase tracking-widest text-black">Month</label>
+                <input type="text" id="month" value={formData.month} onChange={handleChange} className="w-full border-b border-gray-300 py-3 text-lg focus:outline-none focus:border-black transition-colors bg-transparent placeholder-gray-300" placeholder="MM" />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="year" className="block text-sm font-bold uppercase tracking-widest text-black">Year</label>
+                <input type="text" id="year" value={formData.year} onChange={handleChange} className="w-full border-b border-gray-300 py-3 text-lg focus:outline-none focus:border-black transition-colors bg-transparent placeholder-gray-300" placeholder="YYYY" />
+              </div>
+            </div>
+            {(errors.day || errors.month || errors.year) && <p className="text-red-500 text-xs">Date of birth is required</p>}
+
+            <div className="space-y-2">
+              <label htmlFor="gender" className="block text-sm font-bold uppercase tracking-widest text-black">Gender</label>
+              <input type="text" id="gender" value={formData.gender} onChange={handleChange} className="w-full border-b border-gray-300 py-3 text-lg focus:outline-none focus:border-black transition-colors bg-transparent placeholder-gray-300" placeholder="Gender" />
+              {errors.gender && <p className="text-red-500 text-xs mt-1">{errors.gender}</p>}
+            </div>
+          </div>
+        );
+      case 3:
+        return (
+          <div className="space-y-6 animate-in fade-in slide-in-from-right duration-500">
+            <div className="space-y-2">
+              <label htmlFor="email" className="block text-sm font-bold uppercase tracking-widest text-black">Email Address</label>
+              <input type="email" id="email" value={formData.email} onChange={handleChange} className="w-full border-b border-gray-300 py-3 text-lg focus:outline-none focus:border-black transition-colors bg-transparent placeholder-gray-300" placeholder="Email Address" />
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+            </div>
+          </div>
+        );
+      case 4:
+        return (
+          <div className="space-y-6 animate-in fade-in slide-in-from-right duration-500">
+            <div className="space-y-2">
+              <label htmlFor="password" className="block text-sm font-bold uppercase tracking-widest text-black">Password</label>
+              <input type="password" id="password" value={formData.password} onChange={handleChange} className="w-full border-b border-gray-300 py-3 text-lg focus:outline-none focus:border-black transition-colors bg-transparent placeholder-gray-300" placeholder="Min. 6 characters" />
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="confirmPassword" className="block text-sm font-bold uppercase tracking-widest text-black">Confirm Password</label>
+              <input type="password" id="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className="w-full border-b border-gray-300 py-3 text-lg focus:outline-none focus:border-black transition-colors bg-transparent placeholder-gray-300" placeholder="Re-enter password" />
+              {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
   }
 
-  const [showPassword, setshowPassword] = useState(false);
-  
   return (
-    <div className="flex  flex-col justify-center items-center h-screen bg-[#f0f1f5]">
-      <div className="h-[350px] w-[1000px] px-10 pt-20 bg-[#fafafa] rounded-xl shadow-lg overflor-transparent transform hover:scale-105 hover:shadow-2xl duration-500  ">
-        <div className="grid grid-cols-2">
-          {/* Left Section <p> will change when Steps Change */}
-          <div className="space-y-2">
-            <LogoButton />
-            <h1 className="text-2xl font-semibold">
-              {step === 1 && 'Create a FM account'}
-              {step === 2 && 'Basic information'}
-              {step === 3 && 'How you will sign in'}
-              {step === 4 && 'Create a strong Password'}
-              {step === 5 && 'Verify'} </h1>
-              
-            <p className="font-semibold text-sm">
-              {step === 1 && 'Enter your name'}
-              {step === 2 && 'Enter your birth date and gender'}
-              {step === 3 && 'Enter your email'}
-              {step === 4 && 'Create a strong Password with a mixture of letters, numbers and symbols'}
-              {step === 5 && 'Enter the OTP code sent to your email'}
+    <div className="min-h-screen bg-white flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
+
+      {/* Main Container - Minimalist, No Shadow */}
+      <div className="w-full max-w-6xl flex flex-col md:flex-row min-h-[500px]">
+
+        {/* LEFT SECTION: Info & Steps */}
+        <div className="md:w-1/2 p-12 flex flex-col justify-between relative">
+
+          <div>
+            <div className="mb-8">
+              <LogoButton variant="dark" />
+            </div>
+
+            <h1 className="text-4xl font-black uppercase tracking-tighter mb-6 leading-none text-black">
+              {step === 1 && 'Create your\nAccount'}
+              {step === 2 && 'Basic\nInformation'}
+              {step === 3 && 'Contact\nDetails'}
+              {step === 4 && 'Secure your\nAccount'}
+              {step === 5 && 'Verify\nIdentity'}
+            </h1>
+
+            <p className="text-gray-500 font-light text-lg">
+              {step === 1 && 'Start your journey with Luga Mandu.'}
+              {step === 2 && 'Tell us a bit about yourself.'}
+              {step === 3 && 'How can we reach you?'}
+              {step === 4 && 'Create a strong password.'}
             </p>
           </div>
 
-          {/* Right side Form Fields */}
+          {/* Step Indicators */}
           <div className="space-y-4">
-            {step === 1 && (
-              <>
-                  <div className="relative w-full">
-                  <input type="text" 
-                          placeholder="First Name" 
-                          id="firstname" 
-                          required
-                          value={formData.firstname}
-                          onChange={handleChange}
-                    className={`peer placeholder-transparent p-4 w-full rounded-lg border-[1px] 
-      ${errors.firstname 
-        ? "border-red-500 focus:border-red-500 focus:outline-none" 
-        : "border-gray-300 focus:border-green-500 focus:outline-none"}`}/>
-                          <label htmlFor='firstname' 
-                          className="absolute left-3 top-4 text-gray-400 transition-all 
-                          cursor-text 
-                          peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base 
-                          peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500 
-                          peer-valid:-top-3 peer-valid:text-sm peer-valid:text-green-500 bg-[#fafafa] p-1">First Name</label>
-                  </div>
-                  {errors.firstname && <p className="px-2 text-sm text-red-500">{errors.firstname}</p>}
-                  <div className="relative">
-                    <input placeholder="SurName (optional)" 
-                    required
-                    id="surname" type="text" className="peer placeholder-transparent p-4 border-[1px] border-gray-300 w-full rounded-lg focus:border-green-500 focus:outline-none "/>
-                    <label htmlFor="surname" className="absolute left-3 top-4 text-gray-400 transition-all 
-                    cursor-text
-                    peer-valid:-top-3 peer-valid:text-sm peer-valid:text-green-500 
-                    peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base 
-                    peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500 bg-[#fafafa] p-1">Surname {'(optional)'}</label>
-                  </div>
-              </>
-              )
-            }
-
-            {step === 2 && (
-              <>
-                <div className=" flex gap-4">
-                  <div className="relative flex-1">
-                    <input type="text" 
-                    placeholder="Day" id="day" required 
-                    value={formData.day}
-                    onChange={handleChange}
-                    className="peer placeholder-transparent p-4 w-full  border border-gray-300 rounded-lg focus:border-green-500 focus:outline-none"/>
-                    <label htmlFor="day" className="absolute left-3 top-4 text-gray-400 transition-all 
-                          cursor-text 
-                          peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base 
-                          peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500 
-                          peer-valid:-top-3 peer-valid:text-sm peer-valid:text-green-500 bg-[#fafafa] p-1">Day</label>
-                  {errors.day && <p className="px-2 text-sm text-red-500">{errors.day}</p>}
-                  </div>
-                  <div className="relative flex-[2]">
-                    <input type="text" placeholder="Month" id="month" required value={formData.month} onChange={handleChange} className="peer placeholder-transparent p-4 w-full  border border-gray-300 rounded-lg focus:border-green-500 focus:outline-none"/>
-                    <label htmlFor="month" className="absolute left-3 top-4 text-gray-400 transition-all 
-                          cursor-text 
-                          peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base 
-                          peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500 
-                          peer-valid:-top-3 peer-valid:text-sm peer-valid:text-green-500 bg-[#fafafa] p-1">Month</label>
-                  {errors.month && <p className="px-2 text-sm text-red-500">{errors.month}</p>}
-                  </div>
-                  
-                  <div className="relative flex-1">
-                    <input type="text" placeholder="Year" id="year" required value={formData.year} onChange={handleChange} className="peer placeholder-transparent p-4 w-full border border-gray-300 rounded-lg focus:border-green-500 focus:outline-none"/>
-                    <label htmlFor="year" className="absolute left-3 top-4 text-gray-400 transition-all 
-                          cursor-text 
-                          peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base 
-                          peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500 
-                          peer-valid:-top-3 peer-valid:text-sm peer-valid:text-green-500 bg-[#fafafa] p-1">Year</label>
-                  {errors.year && <p className="px-2 text-sm text-red-500">{errors.year} </p>}
-                  </div>
-                  
-                </div>
-                
-                
-                  <div className="relative">
-                    <input type="text" placeholder="Gender" id="gender" required value={formData.gender} onChange={handleChange} className="peer placeholder-transparent w-full border p-4 rounded-lg border-gray-300 focus:border-green-500 focus:outline-none" />
-                    <label htmlFor="gender" className="absolute left-3 top-4 text-gray-400 transition-all 
-                          cursor-text 
-                          peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base 
-                          peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500 
-                          peer-valid:-top-3 peer-valid:text-sm peer-valid:text-green-500 bg-[#fafafa] p-1">Gender</label>
-                  </div>
-                  
-                  {errors.gender && <p className="px-2 text-sm text-red-500">{errors.gender}</p>}
-              </>
-            )}
-
-
-            {step === 3 && (
-              <>
-              <div>
-                <div className="relative">
-                  <input type='email' id="email" placeholder="" required value={formData.email} onChange={handleChange} className="peer p-4 w-full border border-gray-300 rounded-lg focus:border-green-500 focus:outline-none" />
-                  <label htmlFor="email" className="absolute left-3 top-4 text-gray-400 transition-all 
-                          cursor-text 
-                          peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base 
-                          peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500 
-                          peer-valid:-top-3 peer-valid:text-sm peer-valid:text-green-500 bg-[#fafafa] p-1">Email</label>
-                </div>
-                {errors.email && <p className="px-2 text-sm text-red-500">{errors.email} </p> }
-              </div>
-              </>
-            )}
-
-            {step === 4 && (
-              <>
-              <div className="relative w-full">
-                  <input type={showPassword ? "text" : "password"} 
-                          placeholder="First Name" 
-                          id="password" 
-                          required
-                          value={formData.password}
-                          onChange={handleChange}
-                          className="peer placeholder-transparent p-4 border-[1px] border-gray-300 w-full rounded-lg focus:border-green-500 focus:outline-none "/>
-                  <label htmlFor='password' 
-                          className="absolute left-3 top-4 text-gray-400 transition-all 
-                          cursor-text 
-                          peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base 
-                          peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500 
-                          peer-valid:-top-3 peer-valid:text-sm peer-valid:text-green-500 bg-[#fafafa] p-1">Password</label>
-              </div>
-              {errors.password && <p className="px-2 text-sm text-red-500">{errors.password}</p>}
-
-              <div className="relative">
-                  <input placeholder="" 
-                      required
-                      id="confirmPassword" type="text" 
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      className="peer placeholder-transparent p-4 border-[1px] border-gray-300 w-full rounded-lg focus:border-green-500 focus:outline-none "/>
-                  <label htmlFor="confirmPassword" 
-                          className="absolute left-3 top-4 text-gray-400 transition-all 
-                          cursor-text
-                          peer-valid:-top-3 peer-valid:text-sm peer-valid:text-green-500 
-                          peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base 
-                          peer-focus:-top-3 peer-focus:text-sm peer-focus:text-green-500 bg-[#fafafa] p-1">Confirm Password</label>
-              </div>
-              <div className="relative flex space-x-2 items-center">
-                <input type="checkbox" id="showcheck" onClick={() => setshowPassword(!showPassword)} className="peer h-4 w-4 cursor-pointer rounded-md border-gray-300 text-green-600 focus:ring-green-500" />
-                <label htmlFor="showcheck" className="text-gray-400 transition-color peer-checked:text-green-500 ">Show Password</label>
-              </div>
-              {errors.confirmPassword && (<p className="px-2 text-sm text-red-500">{errors.confirmPassword}</p>)}
-              </>
-            )}
-
-            {
-              step === 5 && (
-                <>
-                
-                </>
-              )
-            }
-            
-            {/*  Next & Back Button */}
-            
-          </div>          
-        </div>
-              <div className="flex justify-end gap-4" >
-              {
-                step > 1 && (
-                  <button onClick={handleBack} className="px-10 py-2 mt-6 bg-green-400 rounded-full text-white font-semibold cursor-pointer hover:bg-green-500 ">Back</button>
-                )
-              }
-              {step < 5 && (
-                <button onClick={handleNext} className="px-10 py-2 mt-6 bg-green-400 rounded-full text-white font-semibold cursor-pointer hover:bg-green-500 ">Next</button>
-              )}
-              
+            <div className="text-xs font-bold uppercase tracking-widest text-black">
+              Step {step} of 4
             </div>
+            <div className="flex gap-2 max-w-[200px]">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className={`h-1 flex-1 rounded-full transition-colors duration-300 ${i <= step ? 'bg-black' : 'bg-gray-200'}`} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT SECTION: Form Fields */}
+        <div className="md:w-1/2 p-12 bg-white flex flex-col justify-center">
+
+          <div className="flex-grow flex flex-col justify-center">
+            {renderStepContent()}
+          </div>
+
+          <div className="mt-12 flex items-center justify-between gap-4">
+            {step > 1 ? (
+              <button onClick={handleBack} className="flex items-center text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors">
+                <ChevronLeft size={16} className="mr-1" /> Back
+              </button>
+            ) : <div></div>} {/* Spacer */}
+
+            <button onClick={handleNext} className="group flex items-center bg-black text-white px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-gray-800 transition-all">
+              {step === 4 ? "Finish" : "Next"} <ChevronRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
+
+          <div className="mt-8 text-center md:text-right">
+            <p className="text-xs text-gray-400">
+              Already a member?{' '}
+              <button onClick={() => navigate('/signin')} className="font-bold text-black hover:underline uppercase">
+                Sign In
+              </button>
+            </p>
+          </div>
+        </div>
+
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CreateAccount
+export default CreateAccount;
