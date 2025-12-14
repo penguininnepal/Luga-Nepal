@@ -1,5 +1,4 @@
 import JustForYou from '@/Components/ProductShowcase/ProductCards/JustForYou'
-import React from 'react'
 
 const ProductPage = () => {
   return (

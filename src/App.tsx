@@ -15,6 +15,7 @@ import Checkout from './Pages/Cart/Checkout';
 import Checkoutinfo from './Pages/Cart/Checkoutinfo';
 import OrderSummary from './Pages/Cart/OrderSummary';
 import About from './Pages/About';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
   return (
@@ -45,6 +46,9 @@ function App() {
 
       {/* Footer always at bottom */}
       <Footer />
+
+      {/* Vercel Speed Insights */}
+      <SpeedInsights />
     </div>
   );
 }
