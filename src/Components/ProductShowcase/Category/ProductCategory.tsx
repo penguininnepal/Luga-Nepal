@@ -11,28 +11,8 @@ function Category() {
             title: "Men's Fashion",
         },
         {
-            image: 'https://images.unsplash.com/photo-1596462502278-27bfdd403348?auto=format&fit=crop&q=80&w=800',
-            title: 'Beauty & Cosmetics',
-        },
-        {
             image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&q=80&w=800',
             title: 'Shoes & Footwear',
-        },
-        {
-            image: 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?auto=format&fit=crop&q=80&w=800',
-            title: 'Accessories',
-        },
-        {
-            image: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&q=80&w=800',
-            title: 'Kids Fashion',
-        },
-        {
-            image: 'https://images.unsplash.com/photo-1556228720-1910d93967d6?auto=format&fit=crop&q=80&w=800',
-            title: 'Handbags',
-        },
-        {
-            image: 'https://images.unsplash.com/photo-1509319117193-51043f65569c?auto=format&fit=crop&q=80&w=800',
-            title: 'Watches',
         },
     ];
 

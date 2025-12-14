@@ -22,10 +22,30 @@ const ProductInformation = () => {
     "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800",
   ] : [];
 
+  // Determine category for sizing logic
+  const category = (product as any)?.category || "Women"; // Default to Women if undefined
+
+  const getSizeOptions = (cat: string) => {
+    switch (cat) {
+      case "Men":
+        return ['S', 'M', 'L', 'XL', '2XL'];
+      case "Women":
+        return ['XS', 'S', 'M', 'L', 'XL'];
+      case "Shoes":
+        return ['36', '37', '38', '39', '40', '41', '42', '43', '44'];
+      default:
+        return ['S', 'M', 'L', 'XL'];
+    }
+  };
+
+  const sizeOptions = getSizeOptions(category);
+
   // Initialize/Fallback
   const [selectedImage, setSelectedImage] = useState(images[0]);
   const [size, setSize] = useState("");
-  const [color, setColor] = useState((product as any)?.color || "Classic");
+  // Determine available colors (mock) or use single color
+  const productColors = (product?.color) ? [product.color] : ["Black", "Blue", "Beige", "White"];
+  const [color, setColor] = useState((product?.color) || "Classic");
   const [addQuantity, setAddQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description"); // description | shipping
 
@@ -130,14 +150,13 @@ const ProductInformation = () => {
                   <button className="text-[10px] text-gray-400 underline hover:text-black uppercase tracking-widest">Size Guide</button>
                 </div>
                 <div className="flex flex-wrap gap-4">
-                  {['S', 'M', 'L', 'XL'].map((s) => (
+                  {sizeOptions.map((s) => (
                     <button
                       key={s}
                       onClick={() => setSize(s)}
-                      className={`min-w-[40px] py-1 text-sm font-bold uppercase transition-all duration-200 relative ${size === s ? 'text-black' : 'text-gray-300 hover:text-gray-500'}`}
+                      className={`min-w-[40px] px-3 py-2 border text-sm font-bold uppercase transition-all duration-200 ${size === s ? 'text-white bg-black border-black' : 'text-black border-gray-200 hover:border-black'}`}
                     >
                       {s}
-                      {size === s && <span className="absolute bottom-0 left-0 w-full h-[2px] bg-black"></span>}
                     </button>
                   ))}
                 </div>
@@ -147,12 +166,12 @@ const ProductInformation = () => {
               <div>
                 <span className="text-xs font-bold uppercase tracking-widest text-black mb-4 block">Select Color</span>
                 <div className="flex gap-3">
-                  {['Black', 'Blue', 'Beige', 'White'].map((c) => (
+                  {productColors.map((c: string) => (
                     <button
                       key={c}
                       onClick={() => setColor(c)}
-                      className={`w-6 h-6 rounded-full border border-gray-200 flex items-center justify-center transition-all duration-200 ${color === c ? 'ring-2 ring-black ring-offset-2' : 'hover:scale-110'}`}
-                      style={{ backgroundColor: c.toLowerCase() === 'beige' ? '#f5f5dc' : c.toLowerCase() === 'white' ? '#fff' : c.toLowerCase() }}
+                      className={`w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center transition-all duration-200 ${color === c ? 'ring-2 ring-black ring-offset-2' : 'hover:scale-110'}`}
+                      style={{ backgroundColor: c.toLowerCase() === 'beige' ? '#f5f5dc' : c.toLowerCase() }}
                       title={c}
                     />
                   ))}

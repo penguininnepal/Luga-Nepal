@@ -1,22 +1,21 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { products } from "../../../data/products";
 
 const FeaturedProducts = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-10 bg-white">
       <div className="max-w-7xl mx-auto px-4">
         {/* Minimal Centered Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-2xl font-black uppercase tracking-widest">Trending Products</h2>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-black uppercase tracking-widest">Our Icons</h2>
           <div className="w-12 h-1 bg-black mx-auto mt-4"></div>
         </div>
 
         {/* 3-Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {products.slice(0, 3).map((product) => (
+          {products.filter(p => p.tags?.includes('icon')).slice(0, 3).map((product) => (
             <div key={product.id} onClick={() => navigate(`/productinformation/${product.id}`)} className="group cursor-pointer">
               <div className="bg-gray-50 aspect-[3/4] overflow-hidden mb-6 relative">
                 <img

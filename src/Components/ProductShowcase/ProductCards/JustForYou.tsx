@@ -2,9 +2,7 @@ import JustForYouCard from "./JustForYouCard"
 import { justforyouproducts } from "@/data/products"
 import { useNavigate } from "react-router-dom"
 
-const JustForYou = () => {
-
-
+const JustForYou = ({ products = justforyouproducts }: { products?: typeof justforyouproducts }) => {
   const navigate = useNavigate();
 
   return (
@@ -12,7 +10,7 @@ const JustForYou = () => {
       <div className="max-w-7xl mx-auto px-4">
         {/* Header removed to allow parent control */}
         <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-8 justify-center pb-4">
-          {justforyouproducts.slice(0, 3).map((product) => (
+          {products.slice(0, 3).map((product) => (
             <JustForYouCard
               key={product.id}
               {...product}
@@ -22,7 +20,6 @@ const JustForYou = () => {
         </div>
       </div>
     </section>
-
   )
 }
 

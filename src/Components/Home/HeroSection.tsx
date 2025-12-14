@@ -24,7 +24,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative w-full h-[calc(100vh-0px)] overflow-hidden bg-black text-white group">
+    <section className="relative w-full h-[90vh] overflow-hidden bg-black text-white group">
       <AnimatePresence mode='wait'>
         <motion.div
           key={currentIndex}

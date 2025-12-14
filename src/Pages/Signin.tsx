@@ -72,7 +72,7 @@ const Signin = () => {
               />
             </div>
             <div className="relative">
-              <label htmlFor="password" class="sr-only">Password</label>
+              <label htmlFor="password" className="sr-only">Password</label>
               <input
                 id="password"
                 name="password"

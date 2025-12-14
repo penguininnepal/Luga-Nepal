@@ -1,30 +1,30 @@
 export const specialEditions = [
     {
         id: 1,
-        title: "Limited Edition",
-        subtitle: "Winter Collection",
-        image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&q=80&w=800",
+        title: "Designers Series",
+        subtitle: "Exclusive Drops",
+        image: "https://i.pinimg.com/736x/eb/c4/67/ebc4675215aae3996caebfe937819a55.jpg",
         link: "/collections"
     },
     {
         id: 2,
-        title: "Designer Series",
-        subtitle: "Exclusive Drops",
-        image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800",
+        title: "Wilans Edition",
+        subtitle: "Limited Drops",
+        image: "https://i.pinimg.com/1200x/7f/5e/84/7f5e84cac3fa81b647e858f34057daeb.jpg",
         link: "/collections"
     },
     {
         id: 3,
         title: "Monochrome",
         subtitle: "Essential Basics",
-        image: "https://images.unsplash.com/photo-1596462502278-27bfdd403348?auto=format&fit=crop&q=80&w=800",
+        image: "https://i.pinimg.com/1200x/ff/1f/08/ff1f082d430e72c16afb7fb674d1210d.jpg",
         link: "/collections"
     },
     {
         id: 4,
         title: "Street Culture",
         subtitle: "Urban wear",
-        image: "https://images.unsplash.com/photo-1503341455253-b2e72333dbdb?auto=format&fit=crop&q=80&w=800",
+        image: "https://i.pinimg.com/736x/e7/89/bb/e789bb3b7b0b6b8cb321520252d462e8.jpg",
         link: "/collections"
     }
 ];
