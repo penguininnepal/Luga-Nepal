@@ -19,7 +19,7 @@ function LogoButton({ variant = 'dark' }: LogoButtonProps) {
             Luga
           </span>
           <span className={`${textColor} font-light`}>
-            Mandu
+            Nepal
           </span>
         </div>
       </button>

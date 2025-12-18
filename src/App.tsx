@@ -17,6 +17,10 @@ import OrderSummary from './Pages/Cart/OrderSummary';
 import About from './Pages/About';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
+import Adminsignin from './Admin/Dashboard/Adminsignin';
+import AdminSignup from './Admin/Dashboard/AdminSignup';
+import AdminDashboard from './Admin/Dashboard/AdminDashboard';
+
 function App() {
   return (
     <div className="flex flex-col min-h-screen">
@@ -41,6 +45,10 @@ function App() {
           <Route path="/checkoutinfo/:id" element={<Checkoutinfo />} />
           <Route path="/ordersummary" element={<OrderSummary />} />
           <Route path="/about" element={<About />} />
+
+          <Route path="/adminsignin" element={<Adminsignin />} />
+          <Route path='/adminsignup' element={<AdminSignup />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Routes>
       </main>
 

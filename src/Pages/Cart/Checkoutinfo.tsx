@@ -24,7 +24,12 @@ const Checkoutinfo = () => {
                 email,
                 phonenumber,
                 address,
-                city
+                city,
+                // Passing product info forward
+                size,
+                color,
+                addQuantity,
+                productId: product?.id
             },
         }
         );
@@ -137,7 +142,7 @@ const Checkoutinfo = () => {
                             </div>
 
                             <div className='flex gap-4 mb-6'>
-                                <div className='w-20 h-24 bg-white flex-shrink-0 border border-gray-100 overflow-hidden'>
+                                <div className='w-20 h-24 bg-white shrink-0 border border-gray-100 overflow-hidden'>
                                     <img src={product.image} className='w-full h-full object-cover' alt={product.title} />
                                 </div>
                                 <div>
