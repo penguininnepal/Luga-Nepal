@@ -75,15 +75,15 @@ const Orders = () => {
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
-                            <th className="p-4 border-b font-semibold cursor-pointer hover:bg-gray-100" onClick={() => handleSort('productID')}>
-                                Product ID <ArrowUpDown size={14} className="inline ml-1" />
+                            <th className="p-4 border-b font-semibold cursor-pointer hover:bg-gray-100" onClick={() => handleSort('orderID')}>
+                                Order ID <ArrowUpDown size={14} className="inline ml-1" />
                             </th>
-                            <th className="p-4 border-b font-semibold cursor-pointer hover:bg-gray-100" onClick={() => handleSort('productName')}>
-                                Product Name <ArrowUpDown size={14} className="inline ml-1" />
+                            <th className="p-4 border-b font-semibold">
+                                Product Name
                             </th>
                             <th className="p-4 border-b font-semibold">Invoice No.</th>
-                             <th className="p-4 border-b font-semibold cursor-pointer hover:bg-gray-100" onClick={() => handleSort('quantity')}>
-                                Qty <ArrowUpDown size={14} className="inline ml-1" />
+                             <th className="p-4 border-b font-semibold">
+                                Qty
                             </th>
                             <th className="p-4 border-b font-semibold">Drop Location</th>
                              <th className="p-4 border-b font-semibold">Payment</th>
