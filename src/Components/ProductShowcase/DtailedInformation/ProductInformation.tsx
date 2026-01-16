@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { products, justforyouproducts } from "../../../data/products";
 import { Minus, Plus, Star } from "lucide-react";
 import ImageZoom from "./PoductInfoImage/imageZoom";
+import { addToCart } from "@/utils/cartStorage";
 
 const ProductInformation = () => {
   const navigate = useNavigate();
@@ -14,11 +15,9 @@ const ProductInformation = () => {
     products.find((p) => p.id === Number(id)) ||
     justforyouproducts.find((p) => p.id === Number(id));
 
-  // 2 Image Placements
+  // Huba-style Responsive UI
   const images = product ? [
-    product.image,
-    // Secondary image (Logice for 2nd Image placement on Click is still to be made This is a Sample 2nd Image for all Product cards)
-    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800",
+    product.image
   ] : [];
 
   // Determine category for sizing logic
@@ -57,9 +56,17 @@ const ProductInformation = () => {
   };
 
   const handleaddtocart = () => {
-    navigate(`/cart/${id}`, {
-      state: { size, addQuantity, color },
+    if (!product) return;
+    addToCart({
+        productId: product.id,
+        title: product.title,
+        price: Number(product.price),
+        image: product.image,
+        size: size || 'Standard',
+        color: color || 'Standard',
+        quantity: addQuantity
     });
+    navigate('/cart');
   };
 
   const handlebuynow = () => {

@@ -1,13 +1,35 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoButton from './LogoButton';
 import { Search, ShoppingCart, UserRound, Menu, X, ChevronRight } from 'lucide-react';
+import { getCart } from '@/utils/cartStorage';
 
 function Navbar() {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const updateState = () => {
+        // Update Cart
+        const cart = getCart();
+        setCartCount(cart.reduce((acc, item) => acc + item.quantity, 0));
+        
+        // Update Login
+        setIsLoggedIn(!!localStorage.getItem('currentUser'));
+    };
+
+    updateState();
+    window.addEventListener('cartUpdated', updateState);
+    window.addEventListener('storage', updateState);
+
+    return () => {
+        window.removeEventListener('cartUpdated', updateState);
+        window.removeEventListener('storage', updateState);
+    };
+  }, []);
 
   // Split Navigation Links
   const leftLinks = [
@@ -86,15 +108,17 @@ function Navbar() {
               <Search size={22} strokeWidth={1.5} />
             </button>
 
-            <button onClick={() => navigate('/signin')} className="hover:text-gray-600 transition-colors hidden sm:block">
-              <UserRound size={22} strokeWidth={1.5} />
+            <button onClick={() => navigate(isLoggedIn ? '/account' : '/signin')} className="hover:text-gray-600 transition-colors hidden sm:block">
+              <UserRound size={22} strokeWidth={1.5} className={isLoggedIn ? "text-black fill-black" : ""} />
             </button>
 
-            <button onClick={() => navigate('/cart/0')} className="relative hover:text-gray-600 transition-colors">
+            <button onClick={() => navigate('/cart')} className="relative hover:text-gray-600 transition-colors">
               <ShoppingCart size={22} strokeWidth={1.5} />
-              <span className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full bg-black text-[8px] text-white">
-                2
-              </span>
+               {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full bg-black text-[8px] text-white">
+                    {cartCount}
+                  </span>
+               )}
             </button>
           </div>
         </div>

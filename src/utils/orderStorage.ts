@@ -1,17 +1,20 @@
 
+import { type CartItem } from './cartStorage';
+export type { CartItem };
+
 export interface Order {
-    productID: string;
-    productName: string;
+    orderID: string; // Unique ID for the order
+    items: CartItem[]; // List of items
     invoiceNumber: string;
-    quantity: number;
+    totalAmount: number;
     dropLocation: string;
     paymentMethod: "COD" | "Prepaid";
     status: "Pending" | "Delivered" | "Cancelled" | "Processing";
     customerName: string;
+    email: string;
+    phoneNumber: string;
     orderDate: string;
-    price: number;
-    size: string;
-    color: string;
+    // Legacy fields for backward compatibility if needed, or remove
 }
 
 const STORAGE_KEY = 'luga_nepal_orders';

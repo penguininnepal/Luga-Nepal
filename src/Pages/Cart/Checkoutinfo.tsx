@@ -3,11 +3,18 @@ import { products, justforyouproducts } from '@/data/products';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Percent } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import type { CartItem } from '@/utils/cartStorage';
 
 const Checkoutinfo = () => {
     const navigate = useNavigate();
     const { id } = useParams();
-    const product = products.find((p) => p.id === Number(id)) || justforyouproducts.find((p) => p.id === Number(id))
+    const location = useLocation();
+    
+    // Check if we have a single item from "Buy Now" or Cart Items
+    const { size, color, addQuantity, cartItems, source } = location.state || {};
+    
+    // If single item flow (Buy Now or Legacy)
+    const product = (id && id !== '0') ? (products.find((p) => p.id === Number(id)) || justforyouproducts.find((p) => p.id === Number(id))) : null;
 
     const [firstname, setFirstName] = useState("");
     const [lastname, setLastName] = useState("");
@@ -25,21 +32,27 @@ const Checkoutinfo = () => {
                 phonenumber,
                 address,
                 city,
-                // Passing product info forward
+                // Pass either cartItems or single product details
+                cartItems: cartItems,
+                source: source,
+                // Fallback for single item
                 size,
                 color,
                 addQuantity,
                 productId: product?.id
             },
-        }
-        );
+        });
     };
 
-    const location = useLocation();
-    const { size, color, addQuantity } = location.state || {};
+    // Calculate totals
+    let subtotal = 0;
+    if (cartItems && cartItems.length > 0) {
+        subtotal = cartItems.reduce((acc: number, item: CartItem) => acc + (item.price * item.quantity), 0);
+    } else if (product) {
+        subtotal = Number(product.price) * (addQuantity || 1);
+    }
 
-
-    if (!product) return <p className='text-red-600'>Product Info not Found</p>;
+    if (!product && (!cartItems || cartItems.length === 0)) return <p className='text-red-600'>No items to checkout</p>;
 
     return (
         <div className="min-h-screen bg-white py-12">
@@ -138,27 +151,46 @@ const Checkoutinfo = () => {
                         <div className='bg-gray-50 p-8 h-auto sticky top-24 border border-gray-100'>
                             <div className='flex justify-between mb-6 items-center border-b border-gray-200 pb-4'>
                                 <h2 className='text-lg font-medium text-black uppercase tracking-wide'>Order Summary</h2>
-                                <button onClick={() => navigate(`/cart/${id}`)} className='text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-black transition-colors' >Edit</button>
+                                <button onClick={() => navigateCartOrEdit()} className='text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-black transition-colors' >Edit</button>
                             </div>
 
-                            <div className='flex gap-4 mb-6'>
-                                <div className='w-20 h-24 bg-white shrink-0 border border-gray-100 overflow-hidden'>
-                                    <img src={product.image} className='w-full h-full object-cover' alt={product.title} />
-                                </div>
-                                <div>
-                                    <h3 className='text-sm font-medium text-black uppercase tracking-wide'>{product.title}</h3>
-                                    <div className='text-xs text-gray-500 mt-1 space-y-1'>
-                                        <p>Qty: {addQuantity}</p>
-                                        <p>Size: {size}</p>
-                                        <p>Color: {color}</p>
+                            <div className='max-h-64 overflow-y-auto mb-6 pr-2 space-y-4'>
+                                {cartItems && cartItems.length > 0 ? (
+                                    cartItems.map((item: CartItem) => (
+                                         <div key={item.id} className='flex gap-4'>
+                                            <div className='w-16 h-20 bg-white shrink-0 border border-gray-100 overflow-hidden'>
+                                                <img src={item.image} className='w-full h-full object-cover' alt={item.title} />
+                                            </div>
+                                            <div>
+                                                <h3 className='text-xs font-medium text-black uppercase tracking-wide line-clamp-2'>{item.title}</h3>
+                                                <div className='text-[10px] text-gray-500 mt-1 space-y-0.5'>
+                                                    <p>Qty: {item.quantity}</p>
+                                                    <p>Size: {item.size} / {item.color}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : product ? (
+                                    <div className='flex gap-4'>
+                                        <div className='w-20 h-24 bg-white shrink-0 border border-gray-100 overflow-hidden'>
+                                            <img src={product.image} className='w-full h-full object-cover' alt={product.title} />
+                                        </div>
+                                        <div>
+                                            <h3 className='text-sm font-medium text-black uppercase tracking-wide'>{product.title}</h3>
+                                            <div className='text-xs text-gray-500 mt-1 space-y-1'>
+                                                <p>Qty: {addQuantity}</p>
+                                                <p>Size: {size}</p>
+                                                <p>Color: {color}</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                ) : null}
                             </div>
 
                             <div className='space-y-3 text-sm text-gray-600 border-t border-gray-200 pt-4'>
                                 <div className='flex justify-between'>
                                     <span>Subtotal</span>
-                                    <span className='font-medium text-black'>Rs {(Number(product.price) * (addQuantity || 1)).toFixed(2)}</span>
+                                    <span className='font-medium text-black'>Rs {subtotal.toFixed(2)}</span>
                                 </div>
                                 <div className='flex justify-between'>
                                     <span className='flex items-center gap-1'>Tax <Percent size={12} /></span>
@@ -172,7 +204,7 @@ const Checkoutinfo = () => {
 
                             <div className='flex justify-between items-center py-4 border-t border-gray-200 mt-4'>
                                 <span className='text-base font-semibold text-black uppercase'>Total</span>
-                                <span className='text-xl font-bold text-black'>Rs {(Number(product.price) * (addQuantity || 1)).toFixed(2)}</span>
+                                <span className='text-xl font-bold text-black'>Rs {subtotal.toFixed(2)}</span>
                             </div>
                         </div>
                     </div>
@@ -180,6 +212,16 @@ const Checkoutinfo = () => {
             </div>
         </div>
     );
+
+    function navigateCartOrEdit() {
+        if (cartItems && cartItems.length > 0) {
+            navigate('/cart');
+        } else if (id && id !== '0') {
+             navigate(`/checkout/${id}`); // Or wherever edit goes
+        } else {
+             navigate('/cart');
+        }
+    }
 };
 
 export default Checkoutinfo;

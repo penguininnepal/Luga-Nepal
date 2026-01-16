@@ -4,11 +4,13 @@ import { saveOrder } from '@/utils/orderStorage';
 import type { Order } from '@/utils/orderStorage';
 import { CheckCircle } from 'lucide-react';
 import { useState } from 'react';
+import { clearCart } from '@/utils/cartStorage';
+import type { CartItem } from '@/utils/cartStorage';
 
 const OrderSummary = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { firstname, lastname, phonenumber, address, city, size, color, addQuantity, productId } = location.state || {};
+    const { firstname, lastname, email, phonenumber, address, city, size, color, addQuantity, productId, cartItems } = location.state || {};
 
     const product = products.find((p) => p.id === Number(productId)) || justforyouproducts.find((p) => p.id === Number(productId));
     const [isOrderPlaced, setIsOrderPlaced] = useState(false);
@@ -18,29 +20,47 @@ const OrderSummary = () => {
     }
 
     const handleConfirmOrder = () => {
-        if (!product) return;
+        // Prepare items list
+        const itemsToOrder: CartItem[] = (cartItems && cartItems.length > 0) ? cartItems : (product ? [{
+            id: Date.now(),
+            productId: product.id,
+            title: product.title,
+            price: Number(product.price),
+            image: product.image,
+            size: size || 'N/A',
+            color: color || 'N/A',
+            quantity: addQuantity || 1
+        }] : []);
+
+        if (itemsToOrder.length === 0) return;
+
+        const totalAmount = itemsToOrder.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
         const newOrder: Order = {
-            productID: `PROD-${product.id}`,
-            productName: product.title,
+            orderID: `ORD-${Date.now()}`,
+            items: itemsToOrder,
             invoiceNumber: `INV-${Date.now()}`,
-            quantity: addQuantity || 1,
+            totalAmount: totalAmount,
             dropLocation: `${address}, ${city}`,
             paymentMethod: "COD", 
             status: "Pending",
             customerName: `${firstname} ${lastname}`,
+            email: email || '',
+            phoneNumber: phonenumber || '',
             orderDate: new Date().toISOString().split('T')[0],
-            price: Number(product.price),
-            size: size || 'N/A',
-            color: color || 'N/A'
         };
 
         saveOrder(newOrder);
+        
+        if (location.state?.source === 'cart') {
+            clearCart();
+        }
+
         setIsOrderPlaced(true);
         
         // redirect after a delay
         setTimeout(() => {
-             navigate('/');
+             navigate('/account'); // Navigate to account so they can see the order
         }, 3000);
     };
 
@@ -60,15 +80,19 @@ const OrderSummary = () => {
             <div className="max-w-3xl mx-auto bg-white p-8 shadow-sm">
                  <h1 className="text-2xl font-light text-black mb-8 border-b pb-4 uppercase tracking-wide">Final Review</h1>
                  
-                 <div className="flex gap-8 mb-8">
-                     <div className="w-32 h-40 bg-gray-100 shrink-0">
-                        {product && <img src={product.image} alt={product.title} className="w-full h-full object-cover" />}
-                     </div>
-                     <div>
-                         <h2 className="text-xl font-medium mb-1">{product?.title}</h2>
-                         <p className="text-gray-500 text-sm mb-2">Quantity: {addQuantity || 1} | Size: {size} | Color: {color}</p>
-                         <p className="text-lg font-bold">Rs {((product?.price ? Number(product.price) : 0) * (addQuantity || 1)).toFixed(2)}</p>
-                     </div>
+                 <div className="space-y-6 mb-8">
+                    {(cartItems && cartItems.length > 0 ? cartItems : (product ? [{...product, size, color, quantity: addQuantity || 1}] : [])).map((item: any, idx: number) => (
+                         <div key={idx} className="flex gap-8 border-b border-gray-100 pb-6 last:border-0 last:pb-0">
+                             <div className="w-24 h-32 bg-gray-100 shrink-0">
+                                <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                             </div>
+                             <div>
+                                 <h2 className="text-lg font-medium mb-1">{item.title}</h2>
+                                 <p className="text-gray-500 text-sm mb-2">Quantity: {item.quantity} | Size: {item.size || 'N/A'} | Color: {item.color || 'N/A'}</p>
+                                 <p className="text-lg font-bold">Rs {(Number(item.price) * (item.quantity)).toFixed(2)}</p>
+                             </div>
+                         </div>
+                    ))}
                  </div>
 
                  <div className="grid grid-cols-2 gap-8 mb-8">

@@ -41,6 +41,7 @@ function App() {
           <Route path="/collections" element={<Collections />} />
           <Route path="/createAccount" element={<CreateAccount />} />
           <Route path="/checkout/:id" element={<Checkout />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/cart/:id" element={<Cart />} />
           <Route path="/checkoutinfo/:id" element={<Checkoutinfo />} />
           <Route path="/ordersummary" element={<OrderSummary />} />

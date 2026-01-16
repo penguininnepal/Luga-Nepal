@@ -16,9 +16,10 @@ const Orders = () => {
 
     // Filter Logic
     const filteredOrders = orders.filter(order =>
-        order.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (order.items && order.items.some(item => item.title.toLowerCase().includes(searchTerm.toLowerCase()))) ||
         order.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.customerName.toLowerCase().includes(searchTerm.toLowerCase())
+        order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (order.orderID && order.orderID.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     const handleSort = (key: keyof Order) => {
@@ -33,10 +34,11 @@ const Orders = () => {
         if (!sortConfig) return 0;
         const { key, direction } = sortConfig;
         
-        // Handle potential undefined values safely, though Order type should correspond
-        const aValue = a[key] ?? '';
-        const bValue = b[key] ?? '';
+        let aValue: any = a[key] ?? '';
+        let bValue: any = b[key] ?? '';
 
+        // Handle specific fields if needed, e.g. dates
+        
         if (aValue < bValue) return direction === 'ascending' ? -1 : 1;
         if (aValue > bValue) return direction === 'ascending' ? 1 : -1;
         return 0;
@@ -97,13 +99,24 @@ const Orders = () => {
                         {sortedFilteredOrders.length > 0 ? (
                             sortedFilteredOrders.map((order, index) => (
                                 <tr key={index} className="hover:bg-gray-50 transition-colors border-b last:border-0">
-                                    <td className="p-4 font-medium text-black">{order.productID}</td>
+                                    <td className="p-4 font-medium text-black">{order.orderID || order.invoiceNumber}</td>
                                     <td className="p-4">
-                                        <div>{order.productName}</div>
-                                        <div className="text-xs text-gray-400">{order.size} / {order.color}</div>
+                                        {/* Display items summary */}
+                                        {order.items && order.items.length > 0 ? (
+                                            <div>
+                                                <div className="font-bold">{order.items[0].title}</div>
+                                                {order.items.length > 1 && (
+                                                    <div className="text-xs text-gray-500">+{order.items.length - 1} more items</div>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className="text-red-500 text-xs">No items</div>
+                                        )}
                                     </td>
                                     <td className="p-4 font-mono text-gray-500">{order.invoiceNumber}</td>
-                                    <td className="p-4">{order.quantity}</td>
+                                    <td className="p-4">
+                                        {order.items ? order.items.reduce((acc, i) => acc + i.quantity, 0) : 0}
+                                    </td>
                                     <td className="p-4">{order.dropLocation}</td>
                                     <td className="p-4">
                                         <span className={`px-2 py-1 rounded-full text-xs font-bold ${order.paymentMethod === 'COD' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>
