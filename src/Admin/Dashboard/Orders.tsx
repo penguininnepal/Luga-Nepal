@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
-import { getOrders } from "@/utils/orderStorage"; // Updated import
+import { getOrders, updateOrderStatus } from "@/utils/orderStorage"; // Updated import
 import type { Order } from "@/utils/orderStorage";
-import { ArrowUpDown, Filter, Search, Download } from "lucide-react";
+import { ArrowUpDown, Filter, Search, Download, X, CheckCircle } from "lucide-react";
 
 const Orders = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [sortConfig, setSortConfig] = useState<{ key: keyof Order; direction: 'ascending' | 'descending' } | null>(null);
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
     // Fetch orders on mount
     useEffect(() => {
@@ -44,6 +45,14 @@ const Orders = () => {
         return 0;
     });
 
+
+    const handleStatusUpdate = (orderID: string, newStatus: Order['status']) => {
+        updateOrderStatus(orderID, newStatus);
+        setOrders(getOrders()); // Refresh list
+        if (selectedOrder) {
+            setSelectedOrder({ ...selectedOrder, status: newStatus });
+        }
+    };
 
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
@@ -92,10 +101,6 @@ const Orders = () => {
                         </tr>
                     </thead>
                     <tbody className="text-sm text-gray-700">
-                        {/* 
-                            Logic for fetching orders is now implemented via localStorage.
-                            Depend on User Interactions: After User Check out and Place order the Products order detail will be added here.
-                        */}
                         {sortedFilteredOrders.length > 0 ? (
                             sortedFilteredOrders.map((order, index) => (
                                 <tr key={index} className="hover:bg-gray-50 transition-colors border-b last:border-0">
@@ -132,7 +137,7 @@ const Orders = () => {
                                         </span>
                                     </td>
                                     <td className="p-4 text-right">
-                                        <button className="text-blue-600 hover:text-blue-800 text-xs font-bold mr-2 uppercase">View</button>
+                                        <button onClick={() => setSelectedOrder(order)} className="text-blue-600 hover:text-blue-800 text-xs font-bold mr-2 uppercase">View Details</button>
                                     </td>
                                 </tr>
                             ))
@@ -150,9 +155,93 @@ const Orders = () => {
                 </table>
             </div>
 
-             <div className="p-4 border-t border-gray-200 flex justify-end">
+            <div className="p-4 border-t border-gray-200 flex justify-end">
                 <span className="text-xs text-gray-400">Showing {sortedFilteredOrders.length} entries</span>
-             </div>
+            </div>
+
+            {/* Detail Modal */}
+            {selectedOrder && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                        <div className="p-8 border-b border-gray-100 flex justify-between items-start sticky top-0 bg-white z-10">
+                            <div>
+                                <h3 className="text-2xl font-black uppercase tracking-tight mb-2">Order Details</h3>
+                                <p className="text-gray-500 text-sm">ID: {selectedOrder.orderID || selectedOrder.invoiceNumber} • {selectedOrder.orderDate}</p>
+                            </div>
+                            <button onClick={() => setSelectedOrder(null)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="p-8 grid md:grid-cols-3 gap-12">
+                            {/* Left Col: Items */}
+                            <div className="md:col-span-2 space-y-8">
+                                <div>
+                                    <h4 className="font-bold uppercase tracking-widest text-xs text-gray-400 mb-6">Ordered Items</h4>
+                                    <div className="space-y-6">
+                                        {selectedOrder.items && selectedOrder.items.map((item, idx) => (
+                                            <div key={idx} className="flex gap-6 items-start">
+                                                <div className="w-20 h-24 bg-gray-100 rounded-lg overflow-hidden shrink-0 border border-gray-200">
+                                                    <img src={item.image} className="w-full h-full object-cover" alt={item.title}/>
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h5 className="font-bold text-gray-900 mb-1">{item.title}</h5>
+                                                    <div className="flex flex-wrap gap-2 text-xs text-gray-500 mb-2">
+                                                        <span className="bg-gray-50 px-2 py-1 rounded">Qty: {item.quantity}</span>
+                                                        <span className="bg-gray-50 px-2 py-1 rounded">Size: {item.size}</span>
+                                                        <span className="bg-gray-50 px-2 py-1 rounded">Color: {item.color}</span>
+                                                    </div>
+                                                    <p className="font-bold text-sm">Rs {item.price}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="border-t border-dashed border-gray-200 pt-6 flex justify-between items-center">
+                                    <span className="font-bold uppercase tracking-widest text-xs text-black">Total Paid Amount</span>
+                                    <span className="text-2xl font-black">Rs {selectedOrder.totalAmount}</span>
+                                </div>
+                            </div>
+
+                            {/* Right Col: Customer & Actions */}
+                            <div className="space-y-8">
+                                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                                    <h4 className="font-bold uppercase tracking-widest text-xs text-gray-400 mb-4">Customer Info</h4>
+                                    <div className="space-y-3 text-sm">
+                                        <p><span className="font-semibold text-gray-900">Name:</span> {selectedOrder.customerName}</p>
+                                        <p><span className="font-semibold text-gray-900">Email:</span> {selectedOrder.email}</p>
+                                        <p><span className="font-semibold text-gray-900">Phone:</span> {selectedOrder.phoneNumber}</p>
+                                        <p><span className="font-semibold text-gray-900">Location:</span> {selectedOrder.dropLocation}</p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="font-bold uppercase tracking-widest text-xs text-gray-400 mb-4">Update Status</h4>
+                                    <div className="space-y-3">
+                                        {['Pending', 'Processing', 'Delivered', 'Cancelled'].map((status) => (
+                                            <button
+                                                key={status}
+                                                onClick={() => handleStatusUpdate(selectedOrder.orderID || selectedOrder.invoiceNumber, status as any)}
+                                                className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border text-sm font-bold transition-all ${
+                                                    selectedOrder.status === status
+                                                    ? 'bg-black text-white border-black ring-2 ring-offset-2 ring-black'
+                                                    : 'bg-white text-gray-600 border-gray-200 hover:border-black hover:text-black'
+                                                }`}
+                                            >
+                                                {status}
+                                                {selectedOrder.status === status && <CheckCircle size={16} />}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <p className="text-xs text-gray-400 mt-4 text-center">
+                                        Updating status sends a notification to the customer.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

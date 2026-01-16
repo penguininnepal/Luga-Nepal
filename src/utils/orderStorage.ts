@@ -43,3 +43,19 @@ export const saveOrder = (order: Order): void => {
 export const clearOrders = (): void => {
     localStorage.removeItem(STORAGE_KEY);
 };
+
+export const updateOrderStatus = (orderID: string, newStatus: Order['status']): void => {
+    try {
+        const orders = getOrders();
+        const updatedOrders = orders.map(order => 
+            (order.orderID === orderID || order.invoiceNumber === orderID) 
+                ? { ...order, status: newStatus } 
+                : order
+        );
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedOrders));
+        // Dispatch event so other tabs/components can update immediately if they listen (optional but good practice)
+        window.dispatchEvent(new Event('ordersUpdated'));
+    } catch (error) {
+        console.error("Failed to update order status:", error);
+    }
+};

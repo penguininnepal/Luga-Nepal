@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Package, User, MapPin, Heart, LogOut } from "lucide-react";
+import { Package, User, MapPin, Heart, LogOut, X } from "lucide-react";
 import { getOrders } from "@/utils/orderStorage";
 import type { Order } from "@/utils/orderStorage";
 
@@ -10,16 +9,32 @@ const Account = () => {
   const [activeTab, setActiveTab] = useState("orders");
   const [userData, setUserData] = useState<any>(null);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+
+  const handleViewOrder = (order: any) => {
+      setSelectedOrder(order);
+  }
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
-      setUserData(JSON.parse(storedUser));
-      setOrders(getOrders());
-    } else {
-      // Redirect if not logged in
-      navigate('/signin');
-    }
+    const fetchOrders = () => {
+      const storedUser = localStorage.getItem('currentUser');
+      if (storedUser) {
+        setUserData(JSON.parse(storedUser));
+        setOrders(getOrders());
+      } else {
+        navigate('/signin');
+      }
+    };
+
+    fetchOrders();
+
+    window.addEventListener('ordersUpdated', fetchOrders);
+    window.addEventListener('storage', fetchOrders);
+
+    return () => {
+        window.removeEventListener('ordersUpdated', fetchOrders);
+        window.removeEventListener('storage', fetchOrders);
+    };
   }, [navigate]);
 
   const handleSignOut = () => {
@@ -27,7 +42,7 @@ const Account = () => {
     navigate('/signin');
   };
 
-  if (!userData) return null; // or a loading spinner
+  if (!userData) return null;
 
   const tabs = [
     { id: "orders", label: "My Orders", icon: Package },
@@ -37,7 +52,6 @@ const Account = () => {
   ];
 
   const itemsTotal = (order: any) => {
-      // Legacy support helper
       return (order.price || 0) * (order.quantity || 1);
   };
 
@@ -91,7 +105,6 @@ const Account = () => {
                           {/* Order Items */}
                           <div className="p-6">
                              <div className="space-y-6">
-                                 {/* Handle both new items array and legacy single item structure */}
                                  {order.items && order.items.length > 0 ? (
                                      order.items.map((item, idx) => (
                                          <div key={idx} className="flex gap-6 items-start">
@@ -130,8 +143,8 @@ const Account = () => {
                                    <span className="text-xs text-gray-500 font-medium uppercase tracking-widest">Total Amount</span>
                                    <span className="text-lg font-black text-black">Rs {order.totalAmount || (itemsTotal(order))}</span>
                                </div>
-                               <button className="text-xs font-bold uppercase tracking-widest text-black underline hover:text-gray-600 transition-colors">
-                                   View Invoice
+                               <button onClick={() => handleViewOrder(order)} className="text-xs font-bold uppercase tracking-widest text-black underline hover:text-gray-600 transition-colors">
+                                   View Details
                                </button>
                           </div>
                       </div>
@@ -151,18 +164,18 @@ const Account = () => {
           </div>
         );
       case "addresses":
-        return (
-          <div className="space-y-6">
-            <h3 className="text-xl font-bold uppercase tracking-wide border-b border-gray-100 pb-4">Saved Addresses</h3>
-            <div className="p-6 border border-gray-100 bg-gray-50/50">
-              <p className="font-bold uppercase tracking-wide text-sm mb-2">Default Shipping</p>
-              <p className="text-gray-600 font-medium">{userData.firstname} {userData.surname}</p>
-              <p className="text-gray-600">Sample Street</p>
-              <p className="text-gray-600">Kathmandu, Nepal</p>
-              <button className="text-xs font-bold uppercase mt-4 underline text-gray-400 hover:text-black">Edit</button>
+          return (
+            <div className="space-y-6">
+              <h3 className="text-xl font-bold uppercase tracking-wide border-b border-gray-100 pb-4">Saved Addresses</h3>
+              <div className="p-6 border border-gray-100 bg-gray-50/50">
+                <p className="font-bold uppercase tracking-wide text-sm mb-2">Default Shipping</p>
+                <p className="text-gray-600 font-medium">{userData.firstname} {userData.surname}</p>
+                <p className="text-gray-600">Sample Street</p>
+                <p className="text-gray-600">Kathmandu, Nepal</p>
+                <button className="text-xs font-bold uppercase mt-4 underline text-gray-400 hover:text-black">Edit</button>
+              </div>
             </div>
-          </div>
-        );
+          );
       case "profile":
         return (
           <div className="space-y-6">
@@ -195,17 +208,14 @@ const Account = () => {
   return (
     <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-6xl mx-auto">
-
-        {/* Header */}
         <div className="mb-12 text-center md:text-left">
           <h1 className="text-3xl font-black uppercase tracking-tight mb-2">My Account</h1>
           <p className="text-gray-500 font-light">Welcome back, {userData.firstname}.</p>
         </div>
 
         <div className="flex flex-col md:flex-row gap-12">
-
           {/* Sidebar Navigation */}
-          <div className="w-full md:w-64 flex-shrink-0">
+          <div className="w-full md:w-64 shrink-0">
             <nav className="space-y-1">
               {tabs.map((tab) => (
                 <button
@@ -232,11 +242,85 @@ const Account = () => {
 
           {/* Content Area */}
           <div className="flex-1 min-h-[500px]">
-            {renderContent()}
+             {renderContent()}
           </div>
-
         </div>
       </div>
+
+      {/* User Order Detail Modal */}
+      {selectedOrder && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                   <div className="p-8 border-b border-gray-100 flex justify-between items-start sticky top-0 bg-white z-10">
+                       <div>
+                           <h3 className="text-2xl font-black uppercase tracking-tight mb-2">Order Details</h3>
+                           <div className="flex flex-wrap gap-3 items-center">
+                               <span className="text-gray-500 text-sm font-mono">#{selectedOrder.orderID?.replace('ORD-', '') || selectedOrder.invoiceNumber}</span>
+                               <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
+                                   selectedOrder.status === 'Delivered' ? 'bg-green-50 text-green-700 border-green-100' : 
+                                   selectedOrder.status === 'Cancelled' ? 'bg-red-50 text-red-700 border-red-100' :
+                                   'bg-yellow-50 text-yellow-700 border-yellow-100'
+                               }`}>
+                                   {selectedOrder.status}
+                               </span>
+                           </div>
+                       </div>
+                       <button onClick={() => setSelectedOrder(null)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                           <X className="w-6 h-6" />
+                       </button>
+                   </div>
+
+                   <div className="p-8 space-y-8">
+                        {/* Shipping Info */}
+                        <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 grid sm:grid-cols-2 gap-6">
+                            <div>
+                                <h4 className="font-bold uppercase tracking-widest text-xs text-gray-400 mb-3">Shipping Address</h4>
+                                <p className="text-sm font-medium text-gray-900">{selectedOrder.customerName}</p>
+                                <p className="text-sm text-gray-600">{selectedOrder.dropLocation}</p>
+                                <p className="text-sm text-gray-600">{selectedOrder.phoneNumber}</p>
+                            </div>
+                            <div>
+                                <h4 className="font-bold uppercase tracking-widest text-xs text-gray-400 mb-3">Payment Info</h4>
+                                <p className="text-sm font-medium text-gray-900">Method: {selectedOrder.paymentMethod}</p>
+                                <p className="text-sm text-gray-600">Total: Rs {selectedOrder.totalAmount}</p>
+                            </div>
+                        </div>
+
+                        {/* Items List */}
+                        <div>
+                             <h4 className="font-bold uppercase tracking-widest text-xs text-gray-400 mb-6">Items Ordered</h4>
+                             <div className="space-y-6">
+                                 {selectedOrder.items && selectedOrder.items.length > 0 ? (
+                                     selectedOrder.items.map((item: any, idx: number) => (
+                                         <div key={idx} className="flex gap-4 items-center border-b border-gray-50 last:border-0 pb-4 last:pb-0">
+                                             <div className="w-16 h-20 bg-gray-100 rounded-md overflow-hidden shrink-0 border border-gray-200">
+                                                 <img src={item.image} className="w-full h-full object-cover"/>
+                                             </div>
+                                             <div className="flex-1">
+                                                 <h5 className="font-bold text-gray-900 text-sm mb-1">{item.title}</h5>
+                                                 <p className="text-xs text-gray-500">Size: {item.size} • Color: {item.color} • Qty: {item.quantity}</p>
+                                             </div>
+                                             <p className="font-bold text-sm">Rs {item.price}</p>
+                                         </div>
+                                     ))
+                                 ) : (
+                                     <p className="text-sm text-gray-500">Legacy Order Item (See summary)</p>
+                                 )}
+                             </div>
+                        </div>
+
+                        {/* Summary Footer */}
+                        <div className="flex justify-between items-center pt-6 border-t border-gray-100">
+                             <a href="#" className="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-black underline">Download Invoice PDF</a>
+                             <div className="text-right">
+                                 <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Grand Total</p>
+                                 <p className="text-2xl font-black text-black">Rs {selectedOrder.totalAmount || itemsTotal(selectedOrder)}</p>
+                             </div>
+                        </div>
+                   </div>
+              </div>
+          </div>
+      )}
     </div>
   )
 }
